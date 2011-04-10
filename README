@@ -1,8 +1,44 @@
-===Usage
+# Usage
 
 See examples/make_test.js for more details
 
-===Licence
+# Note
+
+## Active export module example
+
+    (function (window) {
+        var ModuleA = {};
+
+        // Export
+        window.ModuleA = ModuleA;
+    }(window));
+
+## Passive export module example
+
+    var ModuleC = (function (window) {
+        var ModuleC = {};
+
+        // Export
+        return ModuleC;
+    }(window));
+
+## Active import module example
+
+    (function (window, $) {
+        console.log($);
+    }(this, jQuery));
+
+*jQuery as $ is active imported*
+
+## Passive import module example
+
+    (function (window) {
+        console.log(ModuleC);
+    }(this));
+
+*ModuleC is passive imported*
+
+# Licence
 
 Copyright (C) 2011 by azproduction
 
