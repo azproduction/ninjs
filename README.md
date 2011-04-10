@@ -1,10 +1,118 @@
-# Usage
+# Usage example
 
-See examples/make_test.js for more details
+Imagine, you have a project consists of 4 own modules and jQuery at CDN.
 
-# Note
+**ModuleA.js**
+    // Uses ModuleB, ModuleC
+    (function (window) {
+        var ModuleA = {
+            a: 'ModuleA.a',
+            b: 2,
+            c: function () {
+                console.log(ModuleB.b === 'ModuleB.b');
+            },
+            d: function () {
+                console.log(ModuleC.c === 'ModuleC.c');
+            }
+        };
 
-## Active export module example
+        // Export
+        window.ModuleA = ModuleA;
+    }(window));
+
+**ModuleB.js**
+    // Uses ModuleA and jQuery
+    (function (window, $) {
+        var ModuleB = {
+            a: 1,
+            b: 'ModuleB.b',
+            c: function () {
+                console.log(ModuleA.a === 'ModuleA.a');
+                console.log(typeof $ === 'function');
+            }
+        };
+
+        // Export
+        window.ModuleB = ModuleB;
+    }(this, jQuery));
+
+**ModuleC.js**
+var ModuleC = (function (window) {
+    var ModuleC = {
+        a: 1,
+        b: 2,
+        c: 'ModuleC.c',
+        d: function () {
+            console.log(ModuleA.a === 'ModuleA.a');
+            console.log(ModuleB.b === 'ModuleB.b');
+        }
+    };
+
+    // Export
+    return ModuleC;
+}(window));
+
+**ModuleD.js** - Bootstrap file
+    // Uses ModuleA, ModuleB, ModuleC
+    ModuleA.c();
+    ModuleB.c();
+    window.setTimeout(function () {
+        ModuleC.d();
+        ModuleA.d();
+    }, 0);
+
+All modules are included in that order: jQuery, ModuleA, ModuleB, ModuleD (bootstrap), ModuleC.
+You have 5 extra global variables. You want to protect your own methods from user scripts (userscript, extensions, etc).
+There is 3 ways to do it:
+1. Make 1 huge file
+2. Create compile system
+3. Use Ninja js aka Ninjs (The Best)
+
+**Makefile.js**
+    var ninjs = new (require('../Ninjs.js').Ninjs);
+
+    ninjs
+    .add({ // Adding ModuleA
+        file: './files/ModuleA.js',
+        // It passive imports ModuleC and ModuleB
+        imports: ['ModuleC', 'ModuleB'],
+        // And active exports ModuleA
+        exports: 'ModuleA'
+    })
+    .add({ // Adding ModuleB
+        file: './files/ModuleB.js',
+        // It passive imports ModuleA and active imports jQuery
+        imports: 'ModuleA',
+        // And active exports ModuleB
+        exports: 'ModuleB'
+    })
+    .add({ // Adding ModuleD
+        file: './files/ModuleD.js',
+        // It passive imports ModuleA, ModuleB and ModuleC
+        imports: ['ModuleA', 'ModuleB', 'ModuleC']
+        // Nothing exports
+    })
+    .add({ // Adding ModuleC
+        file: './files/ModuleC.js',
+        // It passive imports ModuleA, ModuleB
+        imports: ['ModuleA', 'ModuleB'],
+        // And passive exports ModuleC
+        exports: 'ModuleC',
+        // Because it passive we must force active export it, add ModuleC to force export
+        forceExports: 'ModuleC'
+    })
+    // Cleanup all globals
+    .cleanup('ModuleA', 'ModuleB', 'ModuleC', '$', 'jQuery')
+    // Print to STDOUT
+    .print(true)
+    // Minify
+    ;
+
+See examples/make_test.js for more details.
+
+# What is active/passive export/import?
+
+**Active export module example**
 
     (function (window) {
         var ModuleA = {};
@@ -13,7 +121,7 @@ See examples/make_test.js for more details
         window.ModuleA = ModuleA;
     }(window));
 
-## Passive export module example
+**Passive export module example**
 
     var ModuleC = (function (window) {
         var ModuleC = {};
@@ -22,7 +130,7 @@ See examples/make_test.js for more details
         return ModuleC;
     }(window));
 
-## Active import module example
+**Active import module example**
 
     (function (window, $) {
         console.log($);
@@ -30,7 +138,7 @@ See examples/make_test.js for more details
 
 *jQuery as $ is active imported*
 
-## Passive import module example
+**Passive import module example**
 
     (function (window) {
         console.log(ModuleC);

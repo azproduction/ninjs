@@ -27,7 +27,7 @@ ninjs
     imports: ['ModuleA', 'ModuleB'],
     // And passive exports ModuleC
     exports: 'ModuleC',
-    // Because it passive we must force active export it, add ModuleC to porce export
+    // Because it passive we must force active export it, add ModuleC to force export
     forceExports: 'ModuleC'
 })
 // Cleanup all globals
