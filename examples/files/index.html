@@ -1,0 +1,127 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Ninjs - example</title>
+</head>
+<body>
+<script type="text/javascript">
+// Mock
+(function(window,undefined){
+    window.$ = window.jQuery = function () {};
+}(window));
+</script>
+<script type="text/javascript">
+(function(window,undefined){
+
+var Ninjs = {
+    _waiting: {},
+
+    ready: function (globalName, globalValue) {
+        if (this._waiting.hasOwnProperty(globalName)) {
+            for (var i = 0, c = this._waiting[globalName].length; i < c; i += 1) {
+                this._waiting[globalName][i](globalValue);
+            }
+        }
+    },
+
+    wait: function (globalName, callback) {
+        if (!this._waiting.hasOwnProperty(globalName)) {
+            this._waiting[globalName] = [];
+        }
+        this._waiting[globalName].push(callback);
+    }
+};
+/* Ninjs using camouflage on module ./files/ModuleA.js */
+(function(ModuleC,ModuleB){
+
+Ninjs.wait("ModuleC", function (value) {ModuleC = value;});
+Ninjs.wait("ModuleB", function (value) {ModuleB = value;});
+// Uses ModuleB, ModuleC
+(function (window) {
+    var ModuleA = {
+        a: 'ModuleA.a',
+        b: 2,
+        c: function () {
+            console.log(ModuleB.b === 'ModuleB.b');
+        },
+        d: function () {
+            console.log(ModuleC.c === 'ModuleC.c');
+        }
+    };
+
+    // Export
+    window.ModuleA = ModuleA;
+}(window));
+
+}(undefined,undefined));
+/* Module ./files/ModuleA.js is hidden now */
+/* Ninjs using camouflage on module ./files/ModuleB.js */
+(function(ModuleA){
+
+// Uses ModuleA and jQuery
+(function (window, $) {
+    var ModuleB = {
+        a: 1,
+        b: 'ModuleB.b',
+        c: function () {
+            console.log(ModuleA.a === 'ModuleA.a');
+            console.log(typeof $ === 'function');
+        }
+    };
+
+    // Export
+    window.ModuleB = ModuleB;
+}(this, jQuery));
+
+Ninjs.ready("ModuleB", ModuleB);
+}(ModuleA));
+/* Module ./files/ModuleB.js is hidden now */
+/* Ninjs using camouflage on module ./files/ModuleD.js */
+(function(ModuleA,ModuleB,ModuleC){
+
+Ninjs.wait("ModuleC", function (value) {ModuleC = value;});
+// Uses ModuleA, ModuleB, ModuleC
+ModuleA.c();
+ModuleB.c();
+window.setTimeout(function () {
+    ModuleC.d();
+    ModuleA.d();
+}, 0);
+
+}(ModuleA,ModuleB,undefined));
+/* Module ./files/ModuleD.js is hidden now */
+/* Ninjs using camouflage on module ./files/ModuleC.js */
+(function(ModuleA,ModuleB){
+
+// Uses ModuleA, ModuleB
+var ModuleC = (function (window) {
+    var ModuleC = {
+        a: 1,
+        b: 2,
+        c: 'ModuleC.c',
+        d: function () {
+            console.log(ModuleA.a === 'ModuleA.a');
+            console.log(ModuleB.b === 'ModuleB.b');
+        }
+    };
+
+    // Export
+    return ModuleC;
+}(window));
+
+window.ModuleC = ModuleC;
+Ninjs.ready("ModuleC", ModuleC);
+}(ModuleA,ModuleB));
+/* Module ./files/ModuleC.js is hidden now */
+/* Cleanup */
+delete window["ModuleA"];
+delete window["ModuleB"];
+delete window["ModuleC"];
+delete window["$"];
+delete window["jQuery"];
+}(window));
+
+
+</script>
+</body>
+</html>
