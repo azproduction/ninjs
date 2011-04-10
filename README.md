@@ -37,20 +37,20 @@ Imagine, you have a project consists of 4 own modules and jQuery at CDN.
     }(this, jQuery));
 
 **ModuleC.js**
-var ModuleC = (function (window) {
-    var ModuleC = {
-        a: 1,
-        b: 2,
-        c: 'ModuleC.c',
-        d: function () {
-            console.log(ModuleA.a === 'ModuleA.a');
-            console.log(ModuleB.b === 'ModuleB.b');
-        }
-    };
+    var ModuleC = (function (window) {
+        var ModuleC = {
+            a: 1,
+            b: 2,
+            c: 'ModuleC.c',
+            d: function () {
+                console.log(ModuleA.a === 'ModuleA.a');
+                console.log(ModuleB.b === 'ModuleB.b');
+            }
+        };
 
-    // Export
-    return ModuleC;
-}(window));
+        // Export
+        return ModuleC;
+    }(window));
 
 **ModuleD.js** - Bootstrap file
     // Uses ModuleA, ModuleB, ModuleC
