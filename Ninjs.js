@@ -1,5 +1,44 @@
+/**
+ * @fileOverview Ninjs class
+ *
+ * @example
+ *
+ *      var ninjs = new (require('../Ninjs.js').Ninjs);
+ *
+ *      ninjs
+ *      .add({
+ *          file: './files/ModuleA.js',
+ *          imports: ['ModuleC', 'ModuleB'],
+ *          exports: 'ModuleA'
+ *      })
+ *      .add({
+ *          file: './files/ModuleB.js',
+ *          imports: 'ModuleA',
+ *          exports: 'ModuleB'
+ *      })
+ *      .add({
+ *          file: './files/ModuleD.js',
+ *          imports: ['ModuleA', 'ModuleB', 'ModuleC']
+ *      })
+ *      .add({
+ *          file: './files/ModuleC.js',
+ *          imports: ['ModuleA', 'ModuleB'],
+ *          exports: 'ModuleC',
+ *          forceExports: 'ModuleC'
+ *      })
+ *      .cleanup('ModuleA', 'ModuleB', 'ModuleC', '$', 'jQuery')
+ *      .print(true);
+ *
+ * @author azproduction
+ * @see    https://github.com/azproduction/ninjs
+ */
 var fs = require('fs');
 
+/**
+ * Ninjs
+ *
+ * @constructor
+ */
 function Ninjs() {
     this.blocks = [];
     this.cleanupVars = [];
@@ -8,6 +47,15 @@ function Ninjs() {
 }
 
 // fileName, imports, exports, forceExports, preventClosure
+/**
+ * Adds file to make list
+ * @param {Object}          options
+ * @param {String}          options.fileName         JavaScript file
+ * @param {String|String[]} [options.imports]        List of passive imported modules
+ * @param {String|String[]} [options.exports]        List of all exported modules
+ * @param {String|String[]} [options.forceExports]   List of passive exported modules
+ * @param {Boolean}         [options.preventClosure]
+ */
 Ninjs.prototype.add = function (options) {
     options = options || {};
     var code = fs.readFileSync(options.file, 'utf8');
@@ -38,7 +86,10 @@ Ninjs.prototype.add = function (options) {
     return this;
 };
 
-Ninjs.prototype.ready = function () {
+/**
+ * Call when some extra module ready
+ */
+Ninjs.prototype.ready = function (/* list of ready modules */) {
     var exports = Array.prototype.slice.call(arguments);
     this.blocks.push({
         type: 'ready',
@@ -47,12 +98,18 @@ Ninjs.prototype.ready = function () {
     return this;
 };
 
-Ninjs.prototype.cleanup = function () {
+/**
+ * Adds modules to cleanup list
+ */
+Ninjs.prototype.cleanup = function (/* list of modules */) {
     this.cleanupVars = this.cleanupVars.concat(Array.prototype.slice.call(arguments));
     return this;
 };
 
-Ninjs.prototype.addGlobal = function () {
+/**
+ * Registers global
+ */
+Ninjs.prototype.addGlobal = function (/* list of modules */) {
     for (var i = 0, c = arguments.length; i < c; i += 1) {
         this.availGlobals[arguments[i]] = true;
     }
@@ -137,6 +194,11 @@ Ninjs.prototype._processCodeBlock = function (block) {
     return view;
 };
 
+/**
+ * Compiles modules
+ *
+ * @param {Boolean} stdout return or print to STDUOT
+ */
 Ninjs.prototype.print = function (stdout) {
     var view = '', i, c;
 
