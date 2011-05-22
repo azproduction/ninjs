@@ -7,6 +7,7 @@ Install via npm `npm install ninjs`
 Imagine, you have a project consists of 4 own modules and jQuery at CDN.
 
 **ModuleA.js**
+
     // Uses ModuleB, ModuleC
     (function (window) {
         var ModuleA = {
@@ -25,6 +26,7 @@ Imagine, you have a project consists of 4 own modules and jQuery at CDN.
     }(window));
 
 **ModuleB.js**
+
     // Uses ModuleA and jQuery
     (function (window, $) {
         var ModuleB = {
@@ -41,6 +43,7 @@ Imagine, you have a project consists of 4 own modules and jQuery at CDN.
     }(this, jQuery));
 
 **ModuleC.js**
+
     var ModuleC = (function (window) {
         var ModuleC = {
             a: 1,
@@ -57,6 +60,7 @@ Imagine, you have a project consists of 4 own modules and jQuery at CDN.
     }(window));
 
 **ModuleD.js** - Bootstrap file
+
     // Uses ModuleA, ModuleB, ModuleC
     ModuleA.c();
     ModuleB.c();
@@ -73,6 +77,7 @@ There is 3 ways to do it:
 3. Use Ninja js aka Ninjs (The Best)
 
 **Makefile.js**
+
     var ninjs = new (require('../Ninjs.js').Ninjs);
 
     ninjs
