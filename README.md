@@ -1,3 +1,7 @@
+# Install
+
+Install via npm `npm install ninjs`
+
 # Usage example
 
 Imagine, you have a project consists of 4 own modules and jQuery at CDN.

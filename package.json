@@ -1,0 +1,9 @@
+{
+    "name": "ninjs",
+    "description": "Ninja JavaScript Builder - JavaScript project builder without any extra global variables.",
+    "version": "0.1.0",
+    "author": "azproduction <azazel.private@gmail.com> (http://azproduction.ru)",
+    "keywords": ["make", "build", "builder", "packager", "generator", "modules"],
+    "repository": "git://github.com/azproduction/ninjs",
+    "main": "index"
+}

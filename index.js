@@ -1,0 +1,1 @@
+exports.Ninjs = require(__dirname + '/Ninjs.js').Ninjs;
